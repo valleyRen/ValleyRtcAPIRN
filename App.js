@@ -31,6 +31,8 @@ RNValleyRtcAPI.getIpAddress().then(ip => {
 var emitter = new NativeEventEmitter(RNValleyRtcAPI);
 subScription = emitter.addListener("geolocationDidChange",(body) => {console.log(body)});
 
+console.log(RNValleyRtcAPI.ERR_NOT_LOGINED);
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
   android:
