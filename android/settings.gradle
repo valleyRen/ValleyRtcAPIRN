@@ -2,4 +2,7 @@ rootProject.name = 'ValleyRtcAPIRNDemo'
 
 include ':app'
 include ':react-native-valley-rtc-api'
-project(':react-native-valley-rtc-api').projectDir = new File(rootProject.projectDir, 	'../node_modules/react-native-valley-rtc-api/android')
+project(':react-native-valley-rtc-api').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-valley-rtc-api/android')
+
+include ':ValleyRtcSDK'
+project(':ValleyRtcSDK').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-valley-rtc-api/android/valley_rtc_video_sdk')

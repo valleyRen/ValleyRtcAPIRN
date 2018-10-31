@@ -12,6 +12,8 @@ import com.reactlibrary.RNValleyRtcApiPackage;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.reactlibrary.RNValleyRtcApiModule.InitSDK;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
@@ -43,5 +45,8 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+    // need to init sdk, input application
+    InitSDK(this);
   }
 }
