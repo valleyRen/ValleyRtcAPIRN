@@ -148,7 +148,7 @@ export default class App extends Component<Props> {
     return (
       <View style={styles.container}>
         <TouchableHighlight
-					style={[styles.highLight,{marginTop:50}]}
+					style={[styles.highLight,{marginTop:10}]}
 					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._initSDK()}
@@ -156,7 +156,7 @@ export default class App extends Component<Props> {
 					<Text>初始化</Text>
 				</TouchableHighlight>
         <TouchableHighlight
-					style={[styles.highLight,{marginTop:50}]}
+					style={[styles.highLight,{marginTop:10}]}
 					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._createRoom()}
@@ -164,24 +164,24 @@ export default class App extends Component<Props> {
 					<Text>创建房间</Text>
 				</TouchableHighlight>
         <TouchableHighlight
-					style={[styles.highLight,{marginTop:50}]}
+					style={[styles.highLight,{marginTop:10}]}
 					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._login()}
 					>
 					<Text>进入房间</Text>
 				</TouchableHighlight>
-        <TouchableHighlight 
-					style={[styles.highLight,{marginTop:50}]} 
-					underlayColor='#deb887' 
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:10}]}
+					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._logout()}
 					>
 					<Text>退出房间</Text>
 				</TouchableHighlight>
-        <TouchableHighlight 
-					style={[styles.highLight,{marginTop:50}]} 
-					underlayColor='#deb887' 
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:10}]}
+					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._sendMsg()}
 					>
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 	highLight:{
-		height:60,
+		height:30,
 		width:120,
 		margin:20,
 		padding:5,
