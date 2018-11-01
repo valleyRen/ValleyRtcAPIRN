@@ -14,36 +14,13 @@ import {
 	View,
 	TouchableHighlight,
 	NativeModules,
-	NativeEventEmitter
+	NativeEventEmitter,
+  DeviceEventEmitter
 } from 'react-native'
 
 import RNValleyRtcAPI from 'react-native-valley-rtc-api';
 
-//RNValleyRtcAPI.addEvent("Birthday Party", "4 Privet Drive. Surrey");
-//
-//RNValleyRtcAPI.findEvents((error, events) => {
-//  if (error) {
-//    console.error(error);
-//  }
-//  else {
-//    console.log(events);
-//  }
-//});
-//
-//RNValleyRtcAPI.getIpAddress().then(ip => {
-//  // "92.168.32.44"
-//  console.log(ip);
-//});
-
-//var emitter = new NativeEventEmitter(RNValleyRtcAPI);
-//subScription = emitter.addListener("ValleyCallback",(body) => {
-//  //console.error(body);
-//  //console.error(body.code);
-//  console.log(body.name);
-//});
-//subScription.remove();
-
-//console.log(RNValleyRtcAPI.ERR_NOT_LOGINED);
+// var RNValleyRtcAPI = NativeModules.RNValleyRtcAPI;
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
@@ -62,22 +39,40 @@ export default class App extends Component<Props> {
 
 	_getNotice (body) {
 		this.setState({
-			notice:body.userid + ',' + body.code
+			notice:body.code + ", " + body.userid
 		})
 	}
 	componentWillMount() {
 		//开始监听
-		var emitter = new NativeEventEmitter(RNValleyRtcAPI)
-		this.subScription = emitter.addListener("ValleyCallback",(body) => this._getNotice(body))
+    if (Platform.OS === 'android') {
+      DeviceEventEmitter.addListener('ValleyCallback', (body: Event) => this._getNotice(body));
+    }
+    else if (Platform.OS === 'ios') {
+      var emitter = new NativeEventEmitter(RNValleyRtcAPI)
+      this.subScription = emitter.addListener("ValleyCallback",(body) => this._getNotice(body))
+    }
 	}
 	componentWillUnmount() {
 		//删除监听
-		this.subScription.remove()
+    if (Platform.os === 'ios') {
+      this.subScription.remove()
+    }
 	}
 
   _initSDK() {
     RNValleyRtcAPI.InitSDK();
-    //RNValleyRtcAPI.SetAuthoKey('5b001900bc0366fcEnnQxsE');
+    RNValleyRtcAPI.SetAuthoKey('5b001900bc0366fcEnnQxsE');
+    RNValleyRtcAPI.GetSDKVersion((version) => {
+      this.setState({
+        text:'version: ' + version
+      })
+    });
+
+    // RNValleyRtcAPI.GetErrDesc(123, (errDesc) => {
+    //   this.setState({
+    //     text:'errDesc: ' + errDesc
+    //   })
+    // });
   }
 
  	async _createRoom() { //Promise回调
@@ -91,29 +86,30 @@ export default class App extends Component<Props> {
       this.setState({text:'create success'})
     } catch(e) {
           this.setState({
-            text:'create failed'
+            text:'create failed, , msg = ' + e.code
           })
     }
 	}
-  
+
   _destoryRoom() {
     RNValleyRtcAPI.ChannelRelease()
   }
-  
+
   _releaseSDK() {
     RNValleyRtcAPI.CleanSDK();
   }
-  
+
   _login() {
     var channelid = '5';
     var userid = 'rn-guest';
     RNValleyRtcAPI.ChannelLogin(channelid, userid, (error) => {
-      console.log(error);
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          console.error(error);
+          this.setState({
+            text:'login failed, ' + error
+          })
          }
        });
-    
+
     //RNValleyRtcAPI.ChannelGetLoginStatus((error) => {
     //  console.log(error);
     //    if (error != RNValleyRtcAPI.ERR_SUCCEED) {
@@ -121,11 +117,11 @@ export default class App extends Component<Props> {
     //     }
     //   })
   }
-  
+
   _logout() {
     RNValleyRtcAPI.ChannelLogout()
   }
-  
+
   _sendMsg() {
     RNValleyRtcAPI.ChannelSendMsgr(RNValleyRtcAPI.TYPE_CMD, 'nihao', 'dsadsa', '', (error) => {
       console.log(error);
@@ -147,68 +143,29 @@ export default class App extends Component<Props> {
 //			console.error(e);
 //		}
 //	}
-	//render() {
-	//	return(
-	//		<View>
-	//			<TouchableHighlight 
-	//				style={[styles.highLight,{marginTop:50}]} 
-	//				underlayColor='#deb887' 
-	//				activeOpacity={0.8}
-	//				onPress={() => this._initSDK()}
-	//				>
-	//				<Text>初始化</Text>
-	//			</TouchableHighlight>
-	//			<TouchableHighlight 
-	//				style={styles.highLight} 
-	//				underlayColor='coral' 
-	//				activeOpacity={0.8}
-	//				onPress={() => this._createRoom()}
-	//				>
-	//				<Text>创建房间</Text>
-	//			</TouchableHighlight>
-	//			<TouchableHighlight 
-	//				style={styles.highLight} 
-	//				underlayColor='#5f9ea0' 
-	//				activeOpacity={0.8}
-	//				onPress={() => this._createRoom()}
-	//				>
-	//				<Text>无用</Text>
-	//			</TouchableHighlight>
-	//			<TouchableHighlight 
-	//				style={styles.highLight} 
-	//				underlayColor='#5f9ea0' 
-	//				activeOpacity={0.8}
-	//				onPress={() => this._createRoom()}
-	//				>
-	//				<Text>无用</Text>
-	//			</TouchableHighlight>
-	//			<Text>{this.state.text}</Text>
-	//			<Text>{this.state.notice}</Text>
-	//		</View>
-	//	)
-	//}
+
     render() {
     return (
       <View style={styles.container}>
-        <TouchableHighlight 
-					style={[styles.highLight,{marginTop:50}]} 
-					underlayColor='#deb887' 
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:50}]}
+					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._initSDK()}
 					>
 					<Text>初始化</Text>
 				</TouchableHighlight>
-        <TouchableHighlight 
-					style={[styles.highLight,{marginTop:50}]} 
-					underlayColor='#deb887' 
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:50}]}
+					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._createRoom()}
 					>
 					<Text>创建房间</Text>
 				</TouchableHighlight>
-        <TouchableHighlight 
-					style={[styles.highLight,{marginTop:50}]} 
-					underlayColor='#deb887' 
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:50}]}
+					underlayColor='#deb887'
 					activeOpacity={0.8}
 					onPress={() => this._login()}
 					>
