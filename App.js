@@ -77,13 +77,14 @@ export default class App extends Component<Props> {
 
  	async _createRoom() { //Promise回调
     try {
-			var resolve = await RNValleyRtcAPI.CreateChannel(false)
-      RNValleyRtcAPI.ChannelEnableInterface(RNValleyRtcAPI.IID_RTCMSGR, (error) => {
+      // channel 可以创建多个，以索引识别，带有channel前缀的方法第一个参数都是索引
+			this.index = await RNValleyRtcAPI.CreateChannel(false)
+      RNValleyRtcAPI.ChannelEnableInterface(this.index, RNValleyRtcAPI.IID_RTCMSGR, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           console.error(error);
          }
        });
-      this.setState({text:'create success'})
+      this.setState({text:'create success, index = ' + this.index})
     } catch(e) {
           this.setState({
             text:'create failed, , msg = ' + e.code
@@ -92,7 +93,7 @@ export default class App extends Component<Props> {
 	}
 
   _destoryRoom() {
-    RNValleyRtcAPI.ChannelRelease()
+    RNValleyRtcAPI.ChannelRelease(this.index)
   }
 
   _releaseSDK() {
@@ -102,7 +103,7 @@ export default class App extends Component<Props> {
   _login() {
     var channelid = '5';
     var userid = 'rn-guest';
-    RNValleyRtcAPI.ChannelLogin(channelid, userid, (error) => {
+    RNValleyRtcAPI.ChannelLogin(this.index, channelid, userid, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this.setState({
             text:'login failed, ' + error
@@ -119,14 +120,14 @@ export default class App extends Component<Props> {
   }
 
   _logout() {
-    RNValleyRtcAPI.ChannelLogout()
+    RNValleyRtcAPI.ChannelLogout(this.index)
   }
 
   _sendMsg() {
-    RNValleyRtcAPI.ChannelSendMsgr(RNValleyRtcAPI.TYPE_CMD, 'nihao', 'dsadsa', '', (error) => {
+    RNValleyRtcAPI.ChannelSendMsgr(this.index, RNValleyRtcAPI.TYPE_CMD, 'nihao', 'dsadsa', '', (error) => {
       console.log(error);
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          console.error(error);
+          console.error("msg error = " + error);
          }
        })
   }
