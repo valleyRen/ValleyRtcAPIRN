@@ -39,7 +39,7 @@ export default class App extends Component<Props> {
 
 	_getNotice (body) {
 		this.setState({
-			notice:body.code + ", " + body.userid
+			notice:'event = ' + body.event + ", uid = " + body.userid + ', index = ' + body.index
 		})
 	}
 	componentWillMount() {
