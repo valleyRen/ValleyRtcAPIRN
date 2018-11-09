@@ -40,20 +40,11 @@ export default class App extends Component<Props> {
 		notice:'未收到通知',
     roomText:'5',
 		userText:'' + parseInt(Math.random() * 100000),
-    allowedText:'提问通道当前关闭#点击打开'
+    allowedText:'提问通道当前关闭#点击打开',
+		room:'',
+		user:'',
+		inviter:''
 	}
-
-    _getRoom(text) {
-      this.room = text
-    }
-
-    _getUser(text) {
-      this.user = text
-    }
-
-    _getInviter(text) {
-      this.inviter = text
-    }
 
 	componentWillMount() {
 		//开始监听
@@ -69,6 +60,8 @@ export default class App extends Component<Props> {
     this.busy = false
 		this.room = this.state.roomText
 		this.user = this.state.userText
+		this.alterBodyToken = ''
+		this.alterBodyFromUserid = ''
 	}
 
 	componentWillUnmount() {
@@ -146,27 +139,27 @@ export default class App extends Component<Props> {
   }
 
   _invite() {
-    RNValleyRtcAPI.ChannelGetLoginStatus((error) => {
+		console.log('_invite 1')
+    RNValleyRtcAPI.ChannelGetLoginStatus(this.channelMsgIndex, (error) => {
        if (error != RNValleyRtcAPI.STATUS_LOGINED) {
          this._alert('请重新注册 -- ChannelGetLoginStatus，error = ' + error)
          return
-        }
+        } else {
+					    if (this.state.inviter == '') {
+								this._alert('您输入正确的主持人')
+								return
+							}
+							RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_INVITE', this.room, this.state.inviter, (error) => {
+							if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+								this._alert('发送给主持人电话请求失败 -- ChannelSendMsgr，error = ' + error)
+								return
+							}
+						})
+					this.setState({
+						text:'发送给主持人电话请求 成功'
+					})
+				}
       })
-
-    if (this.inviter == '') {
-      this._alert('您输入正确的主持人')
-      return
-    }
-
-    RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_INVITE', this.room, this.inviter, (error) => {
-        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          this._alert('发送给主持人电话请求失败 -- ChannelSendMsgr，error = ' + error)
-          return
-         }
-       })
-    this.setState({
-     text:'发送给主持人电话请求 成功'
-    })
   }
 
   _switchAllowed() {
@@ -184,6 +177,7 @@ export default class App extends Component<Props> {
   }
 
   _getNotice (body) {
+		console.log('_getNotice entry, body.index = ' + body.index + ', body.event = ' + body.event)
     if (body.index == this.channelMsgIndex) {
       switch(body.event) {
         case RNValleyRtcAPI.RTC_EVTID_RESP_LOGINED:
@@ -200,6 +194,7 @@ export default class App extends Component<Props> {
           break
       }
     }
+		console.log('_getNotice exit, body.index = ' + body.index + ', body.event = ' + body.event)
 	}
 
   _handleRespLogined(body) {
@@ -222,11 +217,14 @@ export default class App extends Component<Props> {
   }
 
   _handleRespSendMsg(body) {
-    text = '发送失败'
+    text = ''
     needAlert = false
     if (body.code != RNValleyRtcAPI.ERR_SUCCEED) {
-      text = '发送成功'
+      text = '发送失败'
       needAlert = true
+    } else {
+			text = '发送成功'
+      needAlert = false
     }
     if (needAlert) {
       this._alert(text)
@@ -244,9 +242,26 @@ export default class App extends Component<Props> {
         this._alert('请求已经送达')
         return
       } else if (body.msg == 'MSG_AUDIO_ENTER') {
-        RNValleyRtcAPI.channelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS)
-        RNValleyRtcAPI.channelEnableLocalAudio(this.channelAudioIndex, true)
-        RNValleyRtcAPI.channelLogin(body.token, this.user)
+				console.log('=== _handleNtfRecvMsg, MSG_AUDIO_ENTER ')
+				// RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS
+     RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
+          return
+         }
+    })
+    RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableLocalAudio，error = ' + error)
+          return
+         }
+    })
+    RNValleyRtcAPI.ChannelLogin(this.channelAudioIndex, body.token, this.user, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送MSG_AUDIO_ENTER失败, ChannelLogin，error = ' + error)
+          return
+         }
+    })
         return
       } else if (body.msg == 'MSG_AUDIO_REFUSE') {
         this._alert('主持人拒绝')
@@ -267,10 +282,13 @@ export default class App extends Component<Props> {
       })
 
       if (this.allowed && !this.busy) {
+				this.alterBodyToken = body.token
+				this.alterBodyFromUserid = body.from_userid
+				console.log('token = ' + this.alterBodyToken + ',  from user = ' + this.alterBodyFromUserid)
         Alert.alert('呼叫','用户' + body.from_userid + '呼叫，是否同意?',
           [
-            {text:"确认", onPress:this._alertConfirm},
-            {text:"取消", onPress:this._alertCancel},
+            {text:"确认", onPress:this._alertConfirm.bind(this)},
+            {text:"取消", onPress:this._alertCancel.bind(this)},
           ]
         );
       } else if (this.allowed) {
@@ -299,28 +317,47 @@ export default class App extends Component<Props> {
     })
     Alert.alert(text);
   }
-
+	
   _alertConfirm() {
+		console.log('====  _alertConfirm, this.alterBodyToken = ' + this.alterBodyToken + ', this.alterBodyFromUserid = ' + this.alterBodyFromUserid)
     //主持人允许用户呼叫的话给用户发送一个enter关键词，让用户那里自动加入房间，上面用户段的逻辑有处理
     this.busy = true
-    RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_ENTER', body.token, body.from_userid, (error) => {
+    RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_ENTER', this.alterBodyToken, this.alterBodyFromUserid, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          this._alert('发送让用户加入房间失败，error = ' + error)
+          this._alert('发送让用户加入房间失败, ChannelSendMsgr，error = ' + error)
           return
          }
     })
 
-    this.setState({
-      roomText:body.token
+		this.setState({
+      roomText:this.alterBodyToken
     })
-    RNValleyRtcAPI.channelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS)
-    RNValleyRtcAPI.channelEnableLocalAudio(this.channelAudioIndex, true)
-    RNValleyRtcAPI.channelLogin(body.token, this.user)
+
+		// RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS
+    RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
+          return
+         }
+    })
+    RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送让用户加入房间失败, ChannelEnableLocalAudio，error = ' + error)
+          return
+         }
+    })
+    RNValleyRtcAPI.ChannelLogin(this.channelAudioIndex, this.alterBodyToken, this.user, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('发送让用户加入房间失败, ChannelLogin，error = ' + error)
+          return
+         }
+    })
   }
 
   _alertCancel() {
+		console.log('====  _alertCancel')
     //主持人不允许用户呼叫的话就发送一个refuse关键词，用户根据关键词处理。
-    RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_REFUSE', body.token, body.from_userid, (error) => {
+    RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_AUDIO_REFUSE', this.alterBodyToken, this.alterBodyFromUserid, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this._alert('发送让用户加入房间失败，error = ' + error)
           return
@@ -346,7 +383,7 @@ export default class App extends Component<Props> {
               style={styles.input}
               placeholder="请输入房间号"
               defaultValue={this.state.roomText}
-              onChangeText={(text) => this._getRoom({text})}/>
+              onChangeText={(text) => this.setState({room:text})}/>
           </View>
         </View>
         <View style={[styles.flexDirection, styles.inputHeight]}>
@@ -358,7 +395,7 @@ export default class App extends Component<Props> {
               style={styles.input}
               placeholder="请输入用户"
 							defaultValue={this.state.userText}
-              onChangeText={(text) => this._getUser({text})}/>
+              onChangeText={(text) => this.setState({user:text})}/>
           </View>
         </View>
         <View style={[styles.flexDirection, styles.inputHeight]}>
@@ -369,7 +406,7 @@ export default class App extends Component<Props> {
             <TextInput
               style={styles.input}
               placeholder="请输入主持人号"
-              onChangeText={(text) => this._getInviter({text})}/>
+              onChangeText={(text) => this.setState({inviter:text})}/>
           </View>
         </View>
         <TouchableHighlight
@@ -392,7 +429,7 @@ export default class App extends Component<Props> {
 					style={[styles.highLight,{marginTop:10}]}
 					underlayColor='#deb887'
 					activeOpacity={0.8}
-					onPress={() => this._login()}
+					onPress={() => this._invite()}
 					>
 					<Text>发送给主持人电话请求</Text>
 				</TouchableHighlight>
