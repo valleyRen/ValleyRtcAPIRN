@@ -13,6 +13,7 @@ import {
 	Text,
 	View,
   Alert,
+	TextInput,
 	TouchableHighlight,
 	NativeModules,
 	NativeEventEmitter,
@@ -37,8 +38,8 @@ export default class App extends Component<Props> {
     version:'0.0',
 		text:'请点击',
 		notice:'未收到通知',
-    roomText:'',
-    randomUser:Math.random() * 100000,
+    roomText:'5',
+		userText:'' + parseInt(Math.random() * 100000),
     allowedText:'提问通道当前关闭#点击打开'
 	}
 
@@ -66,7 +67,8 @@ export default class App extends Component<Props> {
 
     this.allowed = false
     this.busy = false
-    this.user = this.setState.randomUser
+		this.room = this.state.roomText
+		this.user = this.state.userText
 	}
 
 	componentWillUnmount() {
@@ -76,16 +78,17 @@ export default class App extends Component<Props> {
     }
 	}
 
-  async _createChannel() { //Promise回调
-    index = -1
+  async _createChannel(cb) { //Promise回调
+    var index = -1
     try {
       // channel 可以创建多个，以索引识别，带有channel前缀的方法第一个参数都是索引
 			index = await RNValleyRtcAPI.CreateChannel(false)
+			console.log('_createChannel 0, index = ' + index)
       this.setState({text:'create channel success, index = ' + index})
     } catch(e) {
       this._alert('create channel failed, , msg = ' + e.code)
     }
-    return index
+		cb(index)
 	}
 
   _initSDK() {
@@ -97,8 +100,14 @@ export default class App extends Component<Props> {
       })
     });
 
-    this.channelMsgIndex = _createChannel()
-    this.channelAudioIndex = _createChannel()
+		this._createChannel((index) => {
+			this.channelMsgIndex = index
+			console.log('this.channelMsgIndex = ' + this.channelMsgIndex)
+		})
+		this._createChannel((index) => {
+			this.channelAudioIndex = index
+			console.log('this.channelAudioIndex = ' + this.channelAudioIndex)
+		})
     this.defaultRoom = '98'
   }
 
@@ -113,13 +122,13 @@ export default class App extends Component<Props> {
     }
 
     this.defaultUser = this.user
-    RNValleyRtcAPI.ChannelEnableInterface(this.index, RNValleyRtcAPI.IID_RTCMSGR, (error) => {
+    RNValleyRtcAPI.ChannelEnableInterface(this.channelMsgIndex, RNValleyRtcAPI.IID_RTCMSGR, (error) => {
       if (error != RNValleyRtcAPI.ERR_SUCCEED) {
         this._alert('信号注册失败 -- ChannelEnableInterface，error = ' + error)
         return
        }
      });
-
+    
     RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
@@ -178,12 +187,15 @@ export default class App extends Component<Props> {
     if (body.index == this.channelMsgIndex) {
       switch(body.event) {
         case RNValleyRtcAPI.RTC_EVTID_RESP_LOGINED:
+					console.log('_getNotice RTC_EVTID_RESP_LOGINED')
           this._handleRespLogined(body)
           break
         case RNValleyRtcAPI.RTC_EVTID_RESP_SEND_MSG:
+					console.log('_getNotice RTC_EVTID_RESP_SEND_MSG')
           this._handleRespSendMsg(body)
           break
         case RNValleyRtcAPI.RTC_EVTID_NTF_RECV_MSG:
+					console.log('_getNotice RTC_EVTID_NTF_RECV_MSG')
           this._handleNtfRecvMsg(body)
           break
       }
@@ -212,7 +224,7 @@ export default class App extends Component<Props> {
   _handleRespSendMsg(body) {
     text = '发送失败'
     needAlert = false
-    if (body.code ！= RNValleyRtcAPI.ERR_SUCCEED) {
+    if (body.code != RNValleyRtcAPI.ERR_SUCCEED) {
       text = '发送成功'
       needAlert = true
     }
@@ -333,7 +345,7 @@ export default class App extends Component<Props> {
             <TextInput
               style={styles.input}
               placeholder="请输入房间号"
-              value={this.state.roomText}
+              defaultValue={this.state.roomText}
               onChangeText={(text) => this._getRoom({text})}/>
           </View>
         </View>
@@ -345,7 +357,7 @@ export default class App extends Component<Props> {
             <TextInput
               style={styles.input}
               placeholder="请输入用户"
-              value={this.setState.randomUser}
+							defaultValue={this.state.userText}
               onChangeText={(text) => this._getUser({text})}/>
           </View>
         </View>
@@ -372,7 +384,7 @@ export default class App extends Component<Props> {
 					style={[styles.highLight,{marginTop:10}]}
 					underlayColor='#deb887'
 					activeOpacity={0.8}
-					onPress={() => this._register()}
+					onPress={() => this._login()}
 					>
 					<Text>注册</Text>
 				</TouchableHighlight>
