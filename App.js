@@ -121,7 +121,7 @@ export default class App extends Component<Props> {
         return
        }
      });
-    
+
     RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
@@ -243,13 +243,24 @@ export default class App extends Component<Props> {
         return
       } else if (body.msg == 'MSG_AUDIO_ENTER') {
 				console.log('=== _handleNtfRecvMsg, MSG_AUDIO_ENTER ')
-				// RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS
-     RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
-        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
-          return
-         }
-    })
+
+        if (Platform.OS === 'android') {
+          RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
+             if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+               this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
+               return
+              }
+         })
+        }
+        if (Platform.OS === 'ios') {
+          RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
+             if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+               this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
+               return
+              }
+         })
+        }
+
     RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableLocalAudio，error = ' + error)
@@ -317,7 +328,7 @@ export default class App extends Component<Props> {
     })
     Alert.alert(text);
   }
-	
+
   _alertConfirm() {
 		console.log('====  _alertConfirm, this.alterBodyToken = ' + this.alterBodyToken + ', this.alterBodyFromUserid = ' + this.alterBodyFromUserid)
     //主持人允许用户呼叫的话给用户发送一个enter关键词，让用户那里自动加入房间，上面用户段的逻辑有处理
@@ -333,13 +344,23 @@ export default class App extends Component<Props> {
       roomText:this.alterBodyToken
     })
 
-		// RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS
-    RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
-        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
-          return
-         }
-    })
+    if (Platform.OS === 'android') {
+      RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
+         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+           this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
+           return
+          }
+     })
+    }
+    if (Platform.OS === 'ios') {
+      RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
+         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+           this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
+           return
+          }
+     })
+    }
+
     RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
           this._alert('发送让用户加入房间失败, ChannelEnableLocalAudio，error = ' + error)
