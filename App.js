@@ -244,22 +244,12 @@ export default class App extends Component<Props> {
       } else if (body.msg == 'MSG_AUDIO_ENTER') {
 				console.log('=== _handleNtfRecvMsg, MSG_AUDIO_ENTER ')
 
-        if (Platform.OS === 'android') {
           RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
              if (error != RNValleyRtcAPI.ERR_SUCCEED) {
                this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
                return
               }
          })
-        }
-        if (Platform.OS === 'ios') {
-          RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
-             if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-               this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
-               return
-              }
-         })
-        }
 
     RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
@@ -344,22 +334,12 @@ export default class App extends Component<Props> {
       roomText:this.alterBodyToken
     })
 
-    if (Platform.OS === 'android') {
       RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
          if (error != RNValleyRtcAPI.ERR_SUCCEED) {
            this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
            return
           }
      })
-    }
-    if (Platform.OS === 'ios') {
-      RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_USERS, (error) => {
-         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-           this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
-           return
-          }
-     })
-    }
 
     RNValleyRtcAPI.ChannelEnableLocalAudio(this.channelAudioIndex, true, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
