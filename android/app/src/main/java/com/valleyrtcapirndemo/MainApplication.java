@@ -1,6 +1,9 @@
 package com.valleyrtcapirndemo;
 
+import android.Manifest;
 import android.app.Application;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
@@ -45,6 +48,8 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
+
+
 
     // need to init sdk, input application
     InitSDK(this);
