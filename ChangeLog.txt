@@ -1,0 +1,12 @@
+//=================================
+2018-11-15
+1. android gradle 降级到2.3
+2. android 增加访问权限，
+	READ_EXTERNAL_STORAGE
+	WRITE_EXTERNAL_STORAGE
+	RECORD_AUDIO
+3. android 升级新SDK库，优化+稳定性
+4. ios 增加访问权限
+5. ios 升级新SDK库，优化+稳定性
+6. APP.js 在  _releaseSDK() 中 退出 msg channel (RNValleyRtcAPI.ChannelLogout(this.channelMsgIndex))
+//=================================
