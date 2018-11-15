@@ -107,6 +107,7 @@ typedef long long seond_t;
     struct VideoWnd{
         UIView* view;
         int renderMode;
+        int mirrorMode;
     };
     typedef VideoWnd* hvideo_t;
 #else
@@ -298,7 +299,7 @@ __VALLEYAPI int          Valley_EnableLocalVideo(handle_t s, bool bEnable);  // 
 __VALLEYAPI int          Valley_EnableRemoteAudio(handle_t s, const char* userid, bool bEnable); // 关闭或打开用户语音
 __VALLEYAPI int          Valley_EnableRemoteVideo(handle_t s, const char* userid, bool bEnable); // 关闭或打开用户视频  
 
-__VALLEYAPI int          Valley_DisableAudio(handle_t s); // 房间支持语音，默认支持, 只能在登录前调用一次，否则无效
+__VALLEYAPI int          Valley_DisableAudio(handle_t s, bool bDisabled); // 房间支持语音，默认支持, 视频房间只能在登录前调用一次，否则无效
 __VALLEYAPI int          Valley_DisableVideo(handle_t s); // 房间支持视频，默认支持, 只能在登录前调用一次，否则无效
  
 __VALLEYAPI int          Valley_SetCameraIndex(handle_t s, int index); // 设置摄像头

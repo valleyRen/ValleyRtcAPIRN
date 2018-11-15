@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #import <Foundation/Foundation.h> 
 #import <UIKit/UIKit.h>
@@ -101,6 +101,16 @@
 #define RENDER_TYPE_CROP 2       // 会剪切画面，适应view
 #define RENDER_TYPE_AUTO 3       // 自动模式 如果都是w>h，则裁切模式，否则加黑边模式
 
+/*
+MirrorMode_NO  = 0,
+MirrorMode_OnlyLocal = 1, //default front camera use mirror
+MirrorMode_All = 2,
+*/
+
+#define MirrorMode_NO 0
+#define MirrorMode_OnlyLocal 1
+#define MirrorMode_All 2
+
  
 typedef long long seond_t;
 
@@ -125,6 +135,7 @@ typedef long long seond_t;
 __attribute__((visibility("default"))) @interface xVideoCanvas : NSObject
 @property(strong, nonatomic) UIView* view;
 @property(assign, nonatomic) int renderMode;   //RENDER_TYPE_FULL ~ RENDER_TYPE_AUTO
+@property(nonatomic, assign) int mirrorMode;
 @end
 
 
@@ -263,7 +274,7 @@ __attribute__((visibility("default")))  @interface IRtcChannel : NSObject
 -(int)EnableRemoteAudio:(nonnull NSString*)userid bEnable:(bool)b; // 关闭或打开用户语音
 -(int)EnableRemoteVideo:(nonnull NSString*)userid bEnable:(bool)b; // 关闭或打开用户视频
 	
--(int)DisableAudio; // 房间支持语音，默认支持, 只能在登录前调用一次，否则无效
+-(int)DisableAudio:(bool)bDisabled; // 房间支持语音，默认支持, 视频房间只能在登录前调用一次，否则无效
 -(int)DisableVideo; // 房间支持视频，默认支持, 只能在登录前调用一次，否则无效
 
 -(int)SwitchCamera; // 切换摄像头
