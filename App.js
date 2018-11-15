@@ -367,6 +367,7 @@ export default class App extends Component<Props> {
   }
 
   _releaseSDK() {
+    RNValleyRtcAPI.ChannelLogout(this.channelMsgIndex)
     RNValleyRtcAPI.ChannelRelease(this.channelMsgIndex)
     RNValleyRtcAPI.ChannelRelease(this.channelAudioIndex)
     RNValleyRtcAPI.CleanSDK();
