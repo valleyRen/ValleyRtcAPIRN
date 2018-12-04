@@ -202,6 +202,11 @@ export default class App extends Component<Props> {
     needAlert = false
     if (body.code == RNValleyRtcAPI.ERR_SUCCEED) {
       text = '信号注册成功'
+
+      // todo: get user list
+      this._getUserList((body.index) => {
+        console.log('this._getUserList = ' + index)
+      })
     } else {
       text = '信号注册失败'
       needAlert = true
@@ -215,6 +220,18 @@ export default class App extends Component<Props> {
       })
     }
   }
+
+  async _getUserList(index, cb) { //Promise回调
+    var index = -1
+    try {
+			userIdList = await RNValleyRtcAPI.ChannelGetUserList(index)
+			console.log('[index = ' + index + '], user id list count = ' + userIdList.count)
+      console.log('[index = ' + index + '], user id list = ' + userIdList.user_id_list)
+    } catch(e) {
+      this._alert('ChannelGetUserList failed, , msg = ' + e.code)
+    }
+		cb(index)
+	}
 
   _handleRespSendMsg(body) {
     text = ''
