@@ -10,3 +10,14 @@
 5. ios 升级新SDK库，优化+稳定性
 6. APP.js 在  _releaseSDK() 中 退出 msg channel (RNValleyRtcAPI.ChannelLogout(this.channelMsgIndex))
 //=================================
+
+//=================================
+2018-12-04
+1. android&iOS 增加详细的log
+2. 增加IID_AUDIOSYSTEM
+3. 增加ChannelSetSpeakerOn: function(index, type, cb)；使用此接口前提，是在CreateChannel 时候设置IID_AUDIOSYSTEM|IID_AUDIO，需要同时设置
+	index 是索引
+	type 扬声器和听筒切换 -1 耳机互动， 0 听筒 1 扬声器 建议在-1和0之间切换
+4. 修改iOS SendMsg 中文问题
+5. demo 上调用ChannelGetUserList，获取用户列表
+//=================================
