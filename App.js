@@ -194,6 +194,12 @@ export default class App extends Component<Props> {
           break
       }
     }
+		else if (body.index == this.channelAudioIndex) {
+			if (body.event == RNValleyRtcAPI.RTC_EVTID_RESP_LOGINED) {
+					console.log('_getNotice RTC_EVTID_RESP_LOGINED')
+          this._handleRespLogined(body)
+			}
+		}
 		console.log('_getNotice exit, body.index = ' + body.index + ', body.event = ' + body.event)
 	}
 
@@ -204,9 +210,11 @@ export default class App extends Component<Props> {
       text = '信号注册成功'
 
       // todo: get user list
-      this._getUserList((body.index) => {
+			console.log('_getUserList entry')
+      this._getUserList(body.index, (index) => {
         console.log('this._getUserList = ' + index)
       })
+			console.log('_getUserList exit')
     } else {
       text = '信号注册失败'
       needAlert = true
@@ -222,15 +230,21 @@ export default class App extends Component<Props> {
   }
 
   async _getUserList(index, cb) { //Promise回调
-    var index = -1
+    var code = 0
     try {
 			userIdList = await RNValleyRtcAPI.ChannelGetUserList(index)
 			console.log('[index = ' + index + '], user id list count = ' + userIdList.count)
-      console.log('[index = ' + index + '], user id list = ' + userIdList.user_id_list)
+			for (i = 0; i < userIdList.count; i++) {
+				console.log('user_id_list[' + i + '] = ' + userIdList.user_id_list[i])
+			}
     } catch(e) {
-      this._alert('ChannelGetUserList failed, , msg = ' + e.code)
+			console.log('ChannelGetUserList failed, , msg = ' + e.code)
+			if (RNValleyRtcAPI.ERR_GET_USER_NULL != e.code) {
+			 this._alert('ChannelGetUserList failed, , msg = ' + e.code)
+			}
+			code = e.code
     }
-		cb(index)
+		cb(code)
 	}
 
   _handleRespSendMsg(body) {
