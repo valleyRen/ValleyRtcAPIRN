@@ -20,4 +20,5 @@
 	type 扬声器和听筒切换 -1 耳机互动， 0 听筒 1 扬声器 建议在-1和0之间切换
 4. 修改iOS SendMsg 中文问题
 5. demo 上调用ChannelGetUserList，获取用户列表
+6. 在response login 消息中，要获取下get user list 接口，才能获取到user enter 消息
 //=================================
