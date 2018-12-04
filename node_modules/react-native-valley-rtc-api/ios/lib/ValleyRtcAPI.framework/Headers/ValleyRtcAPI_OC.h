@@ -34,6 +34,7 @@
 
 #define IID_USERS   0x01 
 #define IID_AUDIO   0x02 
+#define IID_AUDIOSYSTEM   0x04  
 #define IID_RTCMSGR 0x10 
 
 #define RESERVE_CHANNEL_ATTR_CONFIG "##INNER##CHANNEL_SATTR_CONFIG"  //设置房间内部属性，保留用来设置内部服务器
@@ -278,6 +279,7 @@ __attribute__((visibility("default")))  @interface IRtcChannel : NSObject
 -(int)DisableVideo; // 房间支持视频，默认支持, 只能在登录前调用一次，否则无效
 
 -(int)SwitchCamera; // 切换摄像头
+-(int)SetSpeakerOn:(int)index; // 扬声器和听筒切换 -1 耳机互动， 0 听筒 1 扬声器 建议在-1和0之间切换
 
 //消息房间支持 
 -(int)SetChannelAttr:(nonnull NSString*)name value : (nullable NSString*)value;  // 设置房间属性

@@ -31,9 +31,10 @@
 
 #define ERR_UNDEFINED 100  // Î´¶¨Òå´íÎó
 
-#define IID_USERS   0x01 
-#define IID_AUDIO   0x02 
-#define IID_RTCMSGR 0x10 
+#define IID_USERS		  0x01 
+#define IID_AUDIO		  0x02 
+#define IID_AUDIOSYSTEM   0x04 
+#define IID_RTCMSGR		  0x10 
 
 #define RESERVE_CHANNEL_ATTR_CONFIG "##INNER##CHANNEL_SATTR_CONFIG"  //ÉèÖÃ·¿¼äÄÚ²¿ÊôĞÔ£¬±£ÁôÓÃÀ´ÉèÖÃÄÚ²¿·şÎñÆ÷
 
@@ -303,7 +304,8 @@ __VALLEYAPI int          Valley_DisableAudio(handle_t s, bool bDisabled); // ·¿¼
 __VALLEYAPI int          Valley_DisableVideo(handle_t s); // ·¿¼äÖ§³ÖÊÓÆµ£¬Ä¬ÈÏÖ§³Ö, Ö»ÄÜÔÚµÇÂ¼Ç°µ÷ÓÃÒ»´Î£¬·ñÔòÎŞĞ§
  
 __VALLEYAPI int          Valley_SetCameraIndex(handle_t s, int index); // ÉèÖÃÉãÏñÍ·
- 
+__VALLEYAPI int          Valley_SetSpeakOn(handle_t s, int index);     // ÑïÉùÆ÷ºÍÌıÍ²ÇĞ»» -1 ¶ú»ú»¥¶¯£¬ 0 ÌıÍ² 1 ÑïÉùÆ÷ ½¨ÒéÔÚ-1ºÍ0Ö®¼äÇĞ»»
+
 //ÏûÏ¢·¿¼äÖ§³Ö 
 __VALLEYAPI int          Valley_SetChannelAttr(handle_t s, const char* name, const char* value);  // ÉèÖÃ·¿¼äÊôĞÔ
 __VALLEYAPI hobj_t       Valley_GetChannelAttr(handle_t s, const char* name);  //objString_keys  // »ñÈ¡·¿¼äÊôĞÔ
