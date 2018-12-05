@@ -41,6 +41,7 @@ export default class App extends Component<Props> {
     roomText:'5',
 		userText:'' + parseInt(Math.random() * 100000),
     allowedText:'提问通道当前关闭#点击打开',
+    speakonText:'speaktype=-1',
 		room:'',
 		user:'',
 		inviter:''
@@ -61,7 +62,8 @@ export default class App extends Component<Props> {
 		this.room = this.state.roomText
 		this.user = this.state.userText
 		this.alterBodyToken = ''
-		this.alterBodyFromUserid = ''
+    this.alterBodyFromUserid = ''
+    this.speakonType = -1
 	}
 
 	componentWillUnmount() {
@@ -275,7 +277,7 @@ export default class App extends Component<Props> {
       } else if (body.msg == 'MSG_AUDIO_ENTER') {
 				console.log('=== _handleNtfRecvMsg, MSG_AUDIO_ENTER ')
 
-          RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
+          RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS|RNValleyRtcAPI.IID_AUDIOSYSTEM, (error) => {
              if (error != RNValleyRtcAPI.ERR_SUCCEED) {
                this._alert('发送MSG_AUDIO_ENTER失败, ChannelEnableInterface，error = ' + error)
                return
@@ -306,7 +308,7 @@ export default class App extends Component<Props> {
         return
       }
 
-      RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_INVITE_ARRIVED', '', body.from_userid, (error) => {
+      RNValleyRtcAPI.ChannelSendMsgr(this.channelMsgIndex, RNValleyRtcAPI.TYPE_CMD, 'MSG_INVITE_ARRIVED', '你好', body.from_userid, (error) => {
           if (error != RNValleyRtcAPI.ERR_SUCCEED) {
             this._alert('发送给主持人的反馈失败，error = ' + error)
             return
@@ -365,7 +367,7 @@ export default class App extends Component<Props> {
       roomText:this.alterBodyToken
     })
 
-      RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS, (error) => {
+      RNValleyRtcAPI.ChannelEnableInterface(this.channelAudioIndex, RNValleyRtcAPI.IID_RTCMSGR|RNValleyRtcAPI.IID_AUDIO|RNValleyRtcAPI.IID_USERS|RNValleyRtcAPI.IID_AUDIOSYSTEM, (error) => {
          if (error != RNValleyRtcAPI.ERR_SUCCEED) {
            this._alert('发送让用户加入房间失败, ChannelEnableInterface，error = ' + error)
            return
@@ -394,6 +396,29 @@ export default class App extends Component<Props> {
           this._alert('发送让用户加入房间失败，error = ' + error)
           return
          }
+    })
+  }
+
+  _switchSpeakOn() {
+    switch(this.speakonType) {
+      case -1:
+        this.speakonType = 0;
+        break
+      case 0:
+        this.speakonType = 1;
+        break
+      case 1:
+        this.speakonType = -1;
+        break
+    }
+    this.setState({
+      speakonText:'speaktype=' + this.speakonType
+    })
+    RNValleyRtcAPI.ChannelSetSpeakerOn(this.channelAudioIndex, this.speakonType, (error) => {
+      if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+        this._alert('设置SpeakOn 失败, ChannelSetSpeakerOn，error = ' + error)
+        return
+      }
     })
   }
 
@@ -473,6 +498,14 @@ export default class App extends Component<Props> {
 					onPress={() => this._switchAllowed()}
 					>
 					<Text>{this.state.allowedText}</Text>
+				</TouchableHighlight>
+        <TouchableHighlight
+					style={[styles.highLight,{marginTop:10}]}
+					underlayColor='#deb887'
+					activeOpacity={0.8}
+					onPress={() => this._switchSpeakOn()}
+					>
+					<Text>{this.state.speakonText}</Text>
 				</TouchableHighlight>
         <TouchableHighlight
 					style={[styles.highLight,{marginTop:10}]}
