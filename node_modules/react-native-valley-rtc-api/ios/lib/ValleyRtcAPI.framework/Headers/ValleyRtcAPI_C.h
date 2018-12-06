@@ -19,7 +19,7 @@
 #define ERR_CHANNEL_EXPIRED 1        // 频道已经失效
 #define ERR_CONNECT_SERVER_FAILED 2  // 连接服务器失败
 #define ERR_REQUEST_TIMEOUT 3  // 请求超时
-#define ERR_CONFIG 4  // 配置信息错误 
+#define ERR_CONFIG 4  // 配置信息错误   
 #define ERR_NET_POOL 5  // 网络不好
 #define ERR_VERSION_UNSUPPORTED 6  // 版本不支持
 #define ERR_AUTHO_FAILED 7  // 授权失败 

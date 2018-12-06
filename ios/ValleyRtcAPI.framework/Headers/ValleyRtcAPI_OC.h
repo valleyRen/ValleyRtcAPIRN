@@ -33,7 +33,7 @@
 
 
 #define IID_USERS   0x01 
-#define IID_AUDIO   0x02 
+#define IID_AUDIO   0x02
 #define IID_AUDIOSYSTEM   0x04  
 #define IID_RTCMSGR 0x10 
 
