@@ -21,11 +21,11 @@ import {
   DeviceEventEmitter
 } from 'react-native'
 
-import { StackNavigator } from 'react-navigation';
+// import { StackNavigator } from 'react-navigation';
 
 import RNValleyRtcAPI from 'react-native-valley-rtc-api';
 
-import ValleyView from './ValleyViewDemo'
+// import ValleyView from './ValleyViewDemo'
 
 var RCTValleyVideoView = RNValleyRtcAPI.RCTValleyVideoView
 
@@ -39,10 +39,10 @@ const instructions = Platform.select({
 });
 
 type Props = {};
-class HomeScreen extends Component<Props> {
-  static navigationOptions = {
-    title: 'Welcome',
-  };
+export default class App extends Component<Props> {
+  // static navigationOptions = {
+  //   title: 'Welcome',
+  // };
 
 	state = {
     version:'0.0',
@@ -444,7 +444,7 @@ class HomeScreen extends Component<Props> {
   };
 
   render() {
-    const { navigate } = this.props.navigation;
+    // const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={[styles.flexDirection, styles.inputHeight]}>
@@ -553,10 +553,10 @@ class HomeScreen extends Component<Props> {
           <Button title='跳转'
             onPress={() => {
             console.warn('跳转');
-            this.props.navigator.push({
-              component: ValleyView,
-              title: '详情',
-            });
+            // this.props.navigator.push({
+            //   component: ValleyView,
+            //   title: '详情',
+            // });
           }}>
           </Button>
         </View>
@@ -565,11 +565,11 @@ class HomeScreen extends Component<Props> {
   }
 }
 
-const App = StackNavigator({
-  Home: { screen: HomeScreen },
-});
+// const App = StackNavigator({
+//   Home: { screen: HomeScreen },
+// });
 
-export default App
+// export default App
 
 
 const styles = StyleSheet.create({
