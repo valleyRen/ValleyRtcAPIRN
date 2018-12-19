@@ -13,6 +13,7 @@ import {
 	Text,
 	View,
   Alert,
+  Button,
 	TextInput,
 	TouchableHighlight,
 	NativeModules,
@@ -20,7 +21,13 @@ import {
   DeviceEventEmitter
 } from 'react-native'
 
+import { StackNavigator } from 'react-navigation';
+
 import RNValleyRtcAPI from 'react-native-valley-rtc-api';
+
+import ValleyView from './ValleyViewDemo'
+
+var RCTValleyVideoView = RNValleyRtcAPI.RCTValleyVideoView
 
 // var RNValleyRtcAPI = NativeModules.RNValleyRtcAPI;
 
@@ -32,7 +39,10 @@ const instructions = Platform.select({
 });
 
 type Props = {};
-export default class App extends Component<Props> {
+class HomeScreen extends Component<Props> {
+  static navigationOptions = {
+    title: 'Welcome',
+  };
 
 	state = {
     version:'0.0',
@@ -429,7 +439,12 @@ export default class App extends Component<Props> {
     RNValleyRtcAPI.CleanSDK();
   }
 
+  static navigationOptions = {
+    title: 'Welcome',
+  };
+
   render() {
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={[styles.flexDirection, styles.inputHeight]}>
@@ -467,80 +482,95 @@ export default class App extends Component<Props> {
               onChangeText={(text) => this.setState({inviter:text})}/>
           </View>
         </View>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._initSDK()}
-					>
-					<Text>初始化</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._login()}
-					>
-					<Text>注册</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._invite()}
-					>
-					<Text>发送给主持人电话请求</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._switchAllowed()}
-					>
-					<Text>{this.state.allowedText}</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._switchSpeakOn()}
-					>
-					<Text>{this.state.speakonText}</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-					style={[styles.highLight,{marginTop:10}]}
-					underlayColor='#deb887'
-					activeOpacity={0.8}
-					onPress={() => this._logout()}
-					>
-					<Text>退出房间</Text>
-				</TouchableHighlight>
-        <TouchableHighlight
-          style={[styles.highLight,{marginTop:10}]}
-          underlayColor='#deb887'
-          activeOpacity={0.8}
-          onPress={() => this._releaseSDK()}
-          >
-          <Text>退出sdk</Text>
-        </TouchableHighlight>
+        <View style={styles.flexDirection}>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._initSDK()}
+            >
+            <Text>初始化</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._login()}
+            >
+            <Text>注册</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.flexDirection}>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._invite()}
+            >
+            <Text>发送给主持人电话请求</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._switchAllowed()}
+            >
+            <Text>{this.state.allowedText}</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.flexDirection}>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._switchSpeakOn()}
+            >
+            <Text>{this.state.speakonText}</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._logout()}
+            >
+            <Text>退出房间</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.flexDirection}>
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:10}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
+            onPress={() => this._releaseSDK()}
+            >
+            <Text>退出sdk</Text>
+          </TouchableHighlight>
+        </View>
         <Text style={styles.welcome}>version:{this.state.version}</Text>
         <Text style={styles.welcome}>state:{this.state.text}</Text>
         <Text style={styles.welcome}>notice:{this.state.notice}</Text>
+        <View style={styles.flexDirection}>
+          <Button title='跳转'
+            onPress={() => {
+            console.warn('跳转');
+            this.props.navigator.push({
+              component: ValleyView,
+              title: '详情',
+            });
+          }}>
+          </Button>
+        </View>
       </View>
     );
   }
 }
 
-// {/* <Button
-// title='跳转'
-// onPress={() => {
-//   console.warn('跳转');
-//   this.props.navigator.push({
-//     component: TakePhotoiOS,
-//     title: '详情',
-//   });
-// }}
-// /> */}
+const App = StackNavigator({
+  Home: { screen: HomeScreen },
+});
+
+export default App
+
 
 const styles = StyleSheet.create({
     container: {
@@ -579,6 +609,9 @@ btn:{
 flexDirection:{
   flexDirection:'row'
 },
+// flexDirection_column:{
+//   flexDirection:'column'
+// },
 topStatus:{
   marginTop:25,
 },
@@ -601,5 +634,5 @@ input:{
 		borderWidth:1,
 		borderColor:'coral',
 		padding:2
-	}
+  }
 })
