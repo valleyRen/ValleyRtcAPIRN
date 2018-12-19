@@ -531,6 +531,17 @@ export default class App extends Component<Props> {
   }
 }
 
+// {/* <Button
+// title='跳转'
+// onPress={() => {
+//   console.warn('跳转');
+//   this.props.navigator.push({
+//     component: TakePhotoiOS,
+//     title: '详情',
+//   });
+// }}
+// /> */}
+
 const styles = StyleSheet.create({
     container: {
     flex: 1,
