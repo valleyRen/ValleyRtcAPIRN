@@ -1,8 +1,8 @@
 /*
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
- * @Last Modified by:   LanPZzzz 
- * @Last Modified time: 2018-12-20 11:13:18 
+ * @Last Modified by: LanPZzzz
+ * @Last Modified time: 2018-12-20 16:23:08
  */
 /**
  * Sample React Native App
@@ -64,6 +64,8 @@ export default class App extends Component<Props> {
 
 
     _reload:false,
+    _local:true,
+    _remove:false,
     _channelMsgIndex:-1,
     _channelAudioIndex:-1,
 	}
@@ -85,6 +87,9 @@ export default class App extends Component<Props> {
 		this.alterBodyToken = ''
     this.alterBodyFromUserid = ''
     this.speakonType = -1
+
+    // todo: default is video mode. now is test. select button
+    this.videoMode = true
 	}
 
 	componentWillUnmount() {
@@ -98,7 +103,7 @@ export default class App extends Component<Props> {
     var index = -1
     try {
       // channel 可以创建多个，以索引识别，带有channel前缀的方法第一个参数都是索引
-			index = await RNValleyRtcAPI.CreateChannel(false)
+			index = await RNValleyRtcAPI.CreateChannel(this.videoMode)
 			console.log('_createChannel 0, index = ' + index)
       this.setState({text:'create channel success, index = ' + index})
     } catch(e) {
@@ -122,14 +127,18 @@ export default class App extends Component<Props> {
       this.setState({
         _channelMsgIndex:index
       })
-		})
-		this._createChannel((index) => {
-			this.channelAudioIndex = index
-      console.log('this.channelAudioIndex = ' + this.channelAudioIndex)
-      this.setState({
-        _channelAudioIndex:index
+    })
+    
+    if (!this.videoMode) {
+      this._createChannel((index) => {
+        this.channelAudioIndex = index
+        console.log('this.channelAudioIndex = ' + this.channelAudioIndex)
+        this.setState({
+          _channelAudioIndex:index
+        })
       })
-		})
+    }
+
     this.defaultRoom = '98'
   }
 
@@ -144,19 +153,37 @@ export default class App extends Component<Props> {
     }
 
     this.defaultUser = this.user
-    RNValleyRtcAPI.ChannelEnableInterface(this.channelMsgIndex, RNValleyRtcAPI.IID_RTCMSGR, (error) => {
-      if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-        this._alert('信号注册失败 -- ChannelEnableInterface，error = ' + error)
-        return
-       }
-     });
 
-    RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
+    if (this.videoMode) {
+      // todo: default set VIDEO_CAPTURE_TYPE_16X9_640
+      RNValleyRtcAPI.ChannelSetVideoProfileint(this.channelMsgIndex, RNValleyRtcAPI.VIDEO_CAPTURE_TYPE_16X9_640, (error) => {
         if (error != RNValleyRtcAPI.ERR_SUCCEED) {
-          this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
+          this._alert('设置Video profile 失败 -- ChannelSetVideoProfileint，error = ' + error)
+          return
+        }
+      });
+
+      this.setState({
+        _local:true,
+        _remove:false,
+        _reload:true,
+      })
+    }
+    else {
+      RNValleyRtcAPI.ChannelEnableInterface(this.channelMsgIndex, RNValleyRtcAPI.IID_RTCMSGR, (error) => {
+        if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+          this._alert('信号注册失败 -- ChannelEnableInterface，error = ' + error)
           return
          }
-    });
+       });
+  
+      RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
+          if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+            this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
+            return
+           }
+      });
+    }
   }
 
   _logout() {
@@ -569,21 +596,31 @@ export default class App extends Component<Props> {
         <View style={styles.flexDirection}>
           <Button title='跳转'
             onPress={() => {
-              if (this.state._reload) {
-                  this.setState({
-                      _reload:false
-                  })
-              }
-              else {
-                  this.setState({
-                      _reload:true
-                  })
-              }
+              RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
+                if (error != RNValleyRtcAPI.ERR_SUCCEED) {
+                  this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
+                  return
+                 }
+                })
+              // if (this.state._reload) {
+              //     this.setState({
+              //         _reload:false
+              //     })
+              // }
+              // else {
+              //     this.setState({
+              //         _reload:true
+              //     })
+              // }
           }}>
           </Button>
         </View>
         <RNValleyRtcAPI.RCTValleyVideoView style={styles.flexDirection}
-            userId={'123'} local={true} remove={false} reload={this.state._reload} index={this.state._channelMsgIndex}>
+            userId={this.state.userText}
+            local={this.state._local}
+            remove={this.state._remove}
+            reload={this.state._reload}
+            index={this.state._channelMsgIndex}>
               <View style={styles.flexDirection}>
                   <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
                   <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
