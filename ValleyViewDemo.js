@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-19 16:30:56 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2018-12-19 23:15:00
+ * @Last Modified time: 2018-12-20 10:34:18
  */
 
 import React,{Component} from 'react'
@@ -16,6 +16,11 @@ import {
 import RNValleyRtcAPI from 'react-native-valley-rtc-api';
 
 export default class ValleyViewDemo extends Component {
+
+    state = {
+        _reload:true,
+    }
+    
     render() {
         return(
             <View style={styles.container}>
@@ -27,6 +32,16 @@ export default class ValleyViewDemo extends Component {
                 <Button title='跳转'
                     onPress={() => {
                     console.warn('跳转');
+                    if (this.state._reload) {
+                        this.setState({
+                            _reload:false
+                        })
+                    }
+                    else {
+                        this.setState({
+                            _reload:true
+                        })
+                    }
                     // this.props.navigator.push({
                     //   component: ValleyView,
                     //   title: '详情',
@@ -35,7 +50,7 @@ export default class ValleyViewDemo extends Component {
                 </Button>
 
                 <RNValleyRtcAPI.RCTValleyVideoView style={styles.flexDirection}
-                    userId={'123'} local={true} remove={false} reload={false} index={5}>
+                    userId={'123'} local={true} remove={false} reload={this.state._reload} index={5}>
                     <View style={styles.flexDirection}>
                         <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
                         <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
