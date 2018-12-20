@@ -1,3 +1,9 @@
+/*
+ * @Author: LanPZzzz 
+ * @Date: 2018-12-20 11:13:18 
+ * @Last Modified by:   LanPZzzz 
+ * @Last Modified time: 2018-12-20 11:13:18 
+ */
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -54,7 +60,12 @@ export default class App extends Component<Props> {
     speakonText:'speaktype=-1',
 		room:'',
 		user:'',
-		inviter:''
+    inviter:'',
+
+
+    _reload:false,
+    _channelMsgIndex:-1,
+    _channelAudioIndex:-1,
 	}
 
 	componentWillMount() {
@@ -107,11 +118,17 @@ export default class App extends Component<Props> {
 
 		this._createChannel((index) => {
 			this.channelMsgIndex = index
-			console.log('this.channelMsgIndex = ' + this.channelMsgIndex)
+      console.log('this.channelMsgIndex = ' + this.channelMsgIndex)
+      this.setState({
+        _channelMsgIndex:index
+      })
 		})
 		this._createChannel((index) => {
 			this.channelAudioIndex = index
-			console.log('this.channelAudioIndex = ' + this.channelAudioIndex)
+      console.log('this.channelAudioIndex = ' + this.channelAudioIndex)
+      this.setState({
+        _channelAudioIndex:index
+      })
 		})
     this.defaultRoom = '98'
   }
@@ -552,14 +569,27 @@ export default class App extends Component<Props> {
         <View style={styles.flexDirection}>
           <Button title='跳转'
             onPress={() => {
-            console.warn('跳转');
-            // this.props.navigator.push({
-            //   component: ValleyView,
-            //   title: '详情',
-            // });
+              if (this.state._reload) {
+                  this.setState({
+                      _reload:false
+                  })
+              }
+              else {
+                  this.setState({
+                      _reload:true
+                  })
+              }
           }}>
           </Button>
         </View>
+        <RNValleyRtcAPI.RCTValleyVideoView style={styles.flexDirection}
+            userId={'123'} local={true} remove={false} reload={this.state._reload} index={this.state._channelMsgIndex}>
+              <View style={styles.flexDirection}>
+                  <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+                  <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+                  <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+              </View>
+        </RNValleyRtcAPI.RCTValleyVideoView>
       </View>
     );
   }
