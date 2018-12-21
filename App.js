@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2018-12-21 13:44:05
+ * @Last Modified time: 2018-12-21 14:15:06
  */
 /**
  * Sample React Native App
@@ -624,7 +624,7 @@ export default class App extends Component<Props> {
         <Text style={styles.welcome}>state:{this.state.text}</Text>
         <Text style={styles.welcome}>notice:{this.state.notice}</Text>
         <View style={styles.flexDirection}>
-          <Button title='登录'
+          <Button title='video登录'
             onPress={() => {
               RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
                 if (error != RNValleyRtcAPI.ERR_SUCCEED) {
