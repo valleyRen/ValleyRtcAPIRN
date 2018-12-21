@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2018-12-21 11:54:15
+ * @Last Modified time: 2018-12-21 13:44:05
  */
 /**
  * Sample React Native App
@@ -68,6 +68,9 @@ export default class App extends Component<Props> {
     _remove:false,
     _channelMsgIndex:-1,
     _channelAudioIndex:-1,
+    _remoteUserText:'-1',
+    _remoteRemove:false,
+    _remoteReload:false,
 	}
 
 	componentWillMount() {
@@ -249,6 +252,14 @@ export default class App extends Component<Props> {
 					console.log('_getNotice RTC_EVTID_NTF_RECV_MSG')
           this._handleNtfRecvMsg(body)
           break
+        case RNValleyRtcAPI.RTC_EVTID_NTF_USER_ENTER:
+          console.log('_getNotice RTC_EVTID_NTF_USER_ENTER')
+          this._handleUser(body, true)
+          break
+        case RNValleyRtcAPI.RTC_EVTID_NTF_USER_LEAVE:
+          console.log('_getNotice RTC_EVTID_NTF_USER_LEAVE')
+          this._handleUser(body, false)
+          break
       }
     }
 		else if (body.index == this.channelAudioIndex) {
@@ -259,6 +270,22 @@ export default class App extends Component<Props> {
 		}
 		console.log('_getNotice exit, body.index = ' + body.index + ', body.event = ' + body.event)
 	}
+  // index, code, event, userid
+  _handleUser(body, isEnter) {
+    console.warn('_handleUser, body.userid = ' + body.userid)
+    if (body.code == RNValleyRtcAPI.ERR_SUCCEED) {
+      tmpRemove = false
+      if (!isEnter) {
+        tmpRemove = true
+      }
+      
+      this.setState({
+        _remoteReload:true,
+        _remoteRemove:tmpRemove,
+        _remoteUserText:body.userid
+      })
+    }
+  }
 
   _handleRespLogined(body) {
     text = ''
@@ -267,10 +294,12 @@ export default class App extends Component<Props> {
       text = '信号注册成功'
 
       // todo: get user list
-			console.log('_getUserList entry')
-      this._getUserList(body.index, (index) => {
-        console.log('this._getUserList = ' + index)
-      })
+      console.log('_getUserList entry')
+      if (!this.videoMode) {
+        this._getUserList(body.index, (index) => {
+          console.log('this._getUserList = ' + index)
+        })
+      }
 			console.log('_getUserList exit')
     } else {
       text = '信号注册失败'
@@ -620,20 +649,22 @@ export default class App extends Component<Props> {
           }}>
           </Button>
         </View>
-        <View style={{flexDirection:'column'}}>
+        <View style={{flexDirection:'row'}}>
           <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
               userId={this.state.userText}
               local={this.state._local}
               remove={this.state._remove}
               reload={this.state._reload}
               index={this.state._channelMsgIndex}>
-            <View style={{flexDirection:'column'}}>
-              <View style={{width: 100, height: 50, backgroundColor: 'red'}} />
-              <View style={{width: 100, height: 50, backgroundColor: 'black'}} />
-             <View style={{position:'absolute', width: 50, height: 50, backgroundColor: 'green'}} />
-            </View>
           </RNValleyRtcAPI.RCTValleyVideoView>
-          <View style={{flexDirection:'row', position:'absolute'}}>
+          <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
+              userId={this.state._remoteUserText}
+              local={false}
+              remove={this.state._remoteRemove}
+              reload={this.state._remoteReload}
+              index={this.state._channelMsgIndex}>
+          </RNValleyRtcAPI.RCTValleyVideoView>
+          <View style={{flexDirection:'row', position:'absolute', title:'叠层效果'}}>
             <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
             <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
             <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
