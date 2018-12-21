@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2018-12-20 16:23:08
+ * @Last Modified time: 2018-12-21 11:54:15
  */
 /**
  * Sample React Native App
@@ -167,6 +167,7 @@ export default class App extends Component<Props> {
         _local:true,
         _remove:false,
         _reload:true,
+        text:'设置成功',
       })
     }
     else {
@@ -528,7 +529,7 @@ export default class App extends Component<Props> {
         </View>
         <View style={styles.flexDirection}>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._initSDK()}
@@ -536,7 +537,7 @@ export default class App extends Component<Props> {
             <Text>初始化</Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._login()}
@@ -546,7 +547,7 @@ export default class App extends Component<Props> {
         </View>
         <View style={styles.flexDirection}>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._invite()}
@@ -554,7 +555,7 @@ export default class App extends Component<Props> {
             <Text>发送给主持人电话请求</Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._switchAllowed()}
@@ -564,7 +565,7 @@ export default class App extends Component<Props> {
         </View>
         <View style={styles.flexDirection}>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._switchSpeakOn()}
@@ -572,7 +573,7 @@ export default class App extends Component<Props> {
             <Text>{this.state.speakonText}</Text>
           </TouchableHighlight>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._logout()}
@@ -582,7 +583,7 @@ export default class App extends Component<Props> {
         </View>
         <View style={styles.flexDirection}>
           <TouchableHighlight
-            style={[styles.highLight,{marginTop:10}]}
+            style={[styles.highLight,{marginTop:1}]}
             underlayColor='#deb887'
             activeOpacity={0.8}
             onPress={() => this._releaseSDK()}
@@ -594,12 +595,16 @@ export default class App extends Component<Props> {
         <Text style={styles.welcome}>state:{this.state.text}</Text>
         <Text style={styles.welcome}>notice:{this.state.notice}</Text>
         <View style={styles.flexDirection}>
-          <Button title='跳转'
+          <Button title='登录'
             onPress={() => {
               RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
                 if (error != RNValleyRtcAPI.ERR_SUCCEED) {
                   this._alert('信号注册失败 -- ChannelLogin，error = ' + error)
                   return
+                 } else {
+                   this.setState({
+                    text:'登录成功'
+                   })
                  }
                 })
               // if (this.state._reload) {
@@ -615,29 +620,30 @@ export default class App extends Component<Props> {
           }}>
           </Button>
         </View>
-        <RNValleyRtcAPI.RCTValleyVideoView style={styles.flexDirection}
-            userId={this.state.userText}
-            local={this.state._local}
-            remove={this.state._remove}
-            reload={this.state._reload}
-            index={this.state._channelMsgIndex}>
-              <View style={styles.flexDirection}>
-                  <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
-                  <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
-                  <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
-              </View>
-        </RNValleyRtcAPI.RCTValleyVideoView>
+        <View style={{flexDirection:'column'}}>
+          <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
+              userId={this.state.userText}
+              local={this.state._local}
+              remove={this.state._remove}
+              reload={this.state._reload}
+              index={this.state._channelMsgIndex}>
+            <View style={{flexDirection:'column'}}>
+              <View style={{width: 100, height: 50, backgroundColor: 'red'}} />
+              <View style={{width: 100, height: 50, backgroundColor: 'black'}} />
+             <View style={{position:'absolute', width: 50, height: 50, backgroundColor: 'green'}} />
+            </View>
+          </RNValleyRtcAPI.RCTValleyVideoView>
+          <View style={{flexDirection:'row', position:'absolute'}}>
+            <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
+            <View style={{width: 50, height: 50, backgroundColor: 'skyblue'}} />
+            <View style={{width: 50, height: 50, backgroundColor: 'steelblue'}} />
+          </View>
+        </View>
+
       </View>
     );
   }
 }
-
-// const App = StackNavigator({
-//   Home: { screen: HomeScreen },
-// });
-
-// export default App
-
 
 const styles = StyleSheet.create({
     container: {
@@ -657,49 +663,56 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   search:{
-  color:'#fff',
-  fontSize:15,
-  fontWeight:'bold'
+    color:'#fff',
+    fontSize:15,
+    fontWeight:'bold'
   },
   flex:{
-  flex: 1,
-},
-btn:{
-  width:55,
-  marginLeft:-5,
-  marginRight:5,
-  backgroundColor:'#23BEFF',
-  height:45,
-  justifyContent:'center',
-  alignItems: 'center'
-},
-flexDirection:{
-  flexDirection:'row'
-},
-// flexDirection_column:{
-//   flexDirection:'column'
-// },
-topStatus:{
-  marginTop:25,
-},
-inputHeight:{
-  height:45,
-},
-input:{
-  height:45,
-  borderWidth:1,
-  marginLeft: 5,
-  paddingLeft:5,
-  borderColor: '#ccc',
-  borderRadius: 4
-},
+    flex: 1,
+  },
+  btn:{
+    width:55,
+    marginLeft:-5,
+    marginRight:5,
+    backgroundColor:'#23BEFF',
+    height:45,
+    justifyContent:'center',
+    alignItems: 'center'
+  },
+  flexDirection:{
+    flexDirection:'row'
+  },
+  flexDirection_column:{
+    flexDirection:'column'
+  },
+  location_position:{
+    position:'absolute'
+  },
+  topStatus:{
+    marginTop:25,
+  },
+  inputHeight:{
+    height:45,
+  },
+  input:{
+    height:45,
+    borderWidth:1,
+    marginLeft: 5,
+    paddingLeft:5,
+    borderColor: '#ccc',
+    borderRadius: 4
+  },
+  video:{
+    height:320,
+    width:240,
+  },
 	highLight:{
 		height:30,
 		width:120,
-		margin:20,
+		margin:5,
 		padding:5,
 		borderWidth:1,
 		borderColor:'coral',
-		padding:2
+    padding:2
   }
 })
