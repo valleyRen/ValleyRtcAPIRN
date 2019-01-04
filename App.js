@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2018-12-21 14:15:06
+ * @Last Modified time: 2019-01-03 17:06:22
  */
 /**
  * Sample React Native App
@@ -64,7 +64,6 @@ export default class App extends Component<Props> {
 
 
     _reload:false,
-    _local:true,
     _remove:false,
     _channelMsgIndex:-1,
     _channelAudioIndex:-1,
@@ -167,7 +166,6 @@ export default class App extends Component<Props> {
       });
 
       this.setState({
-        _local:true,
         _remove:false,
         _reload:true,
         text:'设置成功',
@@ -620,11 +618,12 @@ export default class App extends Component<Props> {
             <Text>退出sdk</Text>
           </TouchableHighlight>
         </View>
-        <Text style={styles.welcome}>version:{this.state.version}</Text>
-        <Text style={styles.welcome}>state:{this.state.text}</Text>
-        <Text style={styles.welcome}>notice:{this.state.notice}</Text>
+
         <View style={styles.flexDirection}>
-          <Button title='video登录'
+          <TouchableHighlight
+            style={[styles.highLight,{marginTop:1}]}
+            underlayColor='#deb887'
+            activeOpacity={0.8}
             onPress={() => {
               RNValleyRtcAPI.ChannelLogin(this.channelMsgIndex, this.defaultRoom, this.defaultUser, (error) => {
                 if (error != RNValleyRtcAPI.ERR_SUCCEED) {
@@ -636,23 +635,15 @@ export default class App extends Component<Props> {
                    })
                  }
                 })
-              // if (this.state._reload) {
-              //     this.setState({
-              //         _reload:false
-              //     })
-              // }
-              // else {
-              //     this.setState({
-              //         _reload:true
-              //     })
-              // }
-          }}>
-          </Button>
+            }}
+            >
+            <Text>video登录</Text>
+          </TouchableHighlight>
         </View>
         <View style={{flexDirection:'row'}}>
           <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
               userId={this.state.userText}
-              local={this.state._local}
+              local={true}
               remove={this.state._remove}
               reload={this.state._reload}
               index={this.state._channelMsgIndex}>
@@ -734,8 +725,8 @@ const styles = StyleSheet.create({
     borderRadius: 4
   },
   video:{
-    height:320,
-    width:240,
+    height:160,
+    width:120,
   },
 	highLight:{
 		height:30,
