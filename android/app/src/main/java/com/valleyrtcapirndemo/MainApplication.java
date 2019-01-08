@@ -16,7 +16,7 @@ import com.reactlibrary.RNValleyRtcApiVideoViewPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.reactlibrary.RNValleyRtcApiModule.InitSDK;
+import com.reactlibrary.RNValleyRtcApiModule;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -52,6 +52,6 @@ public class MainApplication extends Application implements ReactApplication {
     SoLoader.init(this, /* native exopackage */ false);
 
     // need to init sdk, input application
-    InitSDK(this);
+    RNValleyRtcApiModule.InitSDK(this);
   }
 }

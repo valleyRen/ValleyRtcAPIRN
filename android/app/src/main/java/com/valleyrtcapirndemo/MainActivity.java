@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
 import com.facebook.react.ReactActivity;
+import com.reactlibrary.RNValleyRtcApiModule;
 
 public class MainActivity extends ReactActivity {
 
@@ -13,7 +14,8 @@ public class MainActivity extends ReactActivity {
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.RECORD_AUDIO};
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.CAMERA};
 
     private void permission() {
         // Check if we have write permission
@@ -32,6 +34,8 @@ public class MainActivity extends ReactActivity {
         super.onCreate(savedInstanceState);
 
         permission();
+
+        RNValleyRtcApiModule.SetActivity(this);
     }
 
     /**
