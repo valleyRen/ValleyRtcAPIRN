@@ -2,7 +2,7 @@
  * @Author: LanPZzzz 
  * @Date: 2018-12-20 11:13:18 
  * @Last Modified by: LanPZzzz
- * @Last Modified time: 2019-01-03 17:06:22
+ * @Last Modified time: 2019-01-11 18:24:38
  */
 /**
  * Sample React Native App
@@ -642,18 +642,10 @@ export default class App extends Component<Props> {
         </View>
         <View style={{flexDirection:'row'}}>
           <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
-              userId={this.state.userText}
-              local={true}
-              remove={this.state._remove}
-              reload={this.state._reload}
-              index={this.state._channelMsgIndex}>
+              videoInfo={{index: this.state._channelMsgIndex, userId: this.state.userText, reload: this.state._reload, remove: this.state._remove, local: true}}>
           </RNValleyRtcAPI.RCTValleyVideoView>
           <RNValleyRtcAPI.RCTValleyVideoView style={styles.video}
-              userId={this.state._remoteUserText}
-              local={false}
-              remove={this.state._remoteRemove}
-              reload={this.state._remoteReload}
-              index={this.state._channelMsgIndex}>
+              videoInfo={{index: this.state._channelMsgIndex, userId: this.state._remoteUserText, reload: this.state._remoteReload, remove: this.state._remoteRemove, local: false}}>
           </RNValleyRtcAPI.RCTValleyVideoView>
           <View style={{flexDirection:'row', position:'absolute', title:'叠层效果'}}>
             <View style={{width: 50, height: 50, backgroundColor: 'powderblue'}} />
@@ -666,6 +658,9 @@ export default class App extends Component<Props> {
     );
   }
 }
+
+// videoInfo={{indx: this.state._channelMsgIndex, userId: this.state.userText, reload: this.state._reload}}>
+// videoInfo={{indx: this.state._channelMsgIndex, userId: this.state._remoteUserText, reload: this.state._remoteReload}}>
 
 const styles = StyleSheet.create({
     container: {
@@ -726,7 +721,7 @@ const styles = StyleSheet.create({
   },
   video:{
     height:160,
-    width:120,
+    width:90,
   },
 	highLight:{
 		height:30,
